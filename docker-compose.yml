@@ -1,0 +1,34 @@
+# Runs the API against PostgreSQL. The credentials below are for local development only.
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: stockroom
+      POSTGRES_USER: stockroom
+      POSTGRES_PASSWORD: stockroom
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U stockroom -d stockroom"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: postgres
+      DB_URL: jdbc:postgresql://db:5432/stockroom
+      DB_USERNAME: stockroom
+      DB_PASSWORD: stockroom
+      APP_JWT_SECRET: docker-compose-local-secret-at-least-32-bytes-long
+    ports:
+      - "8080:8080"
+
+volumes:
+  pgdata:

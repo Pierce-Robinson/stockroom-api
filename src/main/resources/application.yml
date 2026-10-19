@@ -1,0 +1,44 @@
+spring:
+  application:
+    name: stockroom-api
+  datasource:
+    # In-memory H2 in PostgreSQL mode, so the app runs with zero setup.
+    # Use the "postgres" profile (or docker compose) for a real database.
+    url: jdbc:h2:mem:stockroom;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
+    username: sa
+    password: ""
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    locations: classpath:db/migration
+
+server:
+  error:
+    include-message: always
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+
+app:
+  jwt:
+    # Development-only secret. Always override with APP_JWT_SECRET outside local dev.
+    secret: ${APP_JWT_SECRET:local-dev-secret-change-me-it-must-be-at-least-32-bytes}
+    issuer: stockroom-api
+    ttl: 1h
+  seed:
+    enabled: true
+    demo-data: true
+    admin-email: ${APP_SEED_ADMIN_EMAIL:admin@stockroom.local}
+    admin-password: ${APP_SEED_ADMIN_PASSWORD:Admin123!}
+    staff-email: ${APP_SEED_STAFF_EMAIL:staff@stockroom.local}
+    staff-password: ${APP_SEED_STAFF_PASSWORD:Staff123!}

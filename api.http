@@ -1,0 +1,48 @@
+### Example requests. Run them from IntelliJ IDEA or the VS Code "REST Client" extension.
+@baseUrl = http://localhost:8080
+
+### 1. Log in (copy accessToken from the response into @token below)
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{"email": "admin@stockroom.local", "password": "Admin123!"}
+
+###
+@token = paste-access-token-here
+
+### 2. Search products
+GET {{baseUrl}}/api/products?search=bolt&page=0&size=10
+Authorization: Bearer {{token}}
+
+### 3. Create a product
+POST {{baseUrl}}/api/products
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"sku": "HAMMER-16OZ", "name": "16oz claw hammer", "unitPrice": 189.00, "reorderLevel": 5}
+
+### 4. Receive stock
+POST {{baseUrl}}/api/products/1/stock/receipts
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"quantity": 50, "reference": "PO-2041", "note": "Supplier delivery"}
+
+### 5. Create a draft order
+POST {{baseUrl}}/api/orders
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"customerName": "Acme Builders", "lines": [{"productId": 1, "quantity": 10}, {"productId": 2, "quantity": 5}]}
+
+### 6. Confirm it (takes the stock)
+POST {{baseUrl}}/api/orders/1/confirm
+Authorization: Bearer {{token}}
+
+### 7. Stock ledger for a product
+GET {{baseUrl}}/api/products/1/stock/movements
+Authorization: Bearer {{token}}
+
+### 8. Low-stock report
+GET {{baseUrl}}/api/products/low-stock
+Authorization: Bearer {{token}}
